@@ -1,39 +1,53 @@
-import Navbar from "./components/Navbar/Navbar";
-import Main from "./components/Main/Main";
-import Footer from "./components/Footer/Footer";
+import { useState } from "react";
+import { comisiones as datosIniciales } from "./datos";
+import Encabezado from "./componentes/Encabezado";
+import Filtros from "./componentes/Filtros";
+import Buscador from "./componentes/Buscador";
+import ListaComisiones from "./componentes/ListaComisiones";
 
 function App() {
-  const nombreColegio = "Colegio de Psicopedagogos de Salta";
-  const seccionesNav = ["Inicio", "Institucional", "Matriculación", "Contacto"];
+  const [comisiones, setComisiones] = useState(datosIniciales);
+  const [turnoActivo, setTurnoActivo] = useState("todos");
+  const [busqueda, setBusqueda] = useState(""); // Estado para el buscador
 
-  const tituloPrincipal = "Psicopedagogía de la Provincia de Salta";
-  const descripcionGeneral = 
-    "Promoviendo el desarrollo profesional, la ética en la práctica psicopedagógica y la regulación de la matrícula profesional en toda la provincia.";
-  const serviciosDestacados = [
-    "Requisitos y Guía Digital para el Trámite de Matriculación Profesional Ley Nº 6830.",
-    "Buscador Público y Padrón Oficial de Psicopedagogos Matriculados Habilitados.",
-    "Programa de Capacitación Continua y Jornadas de Actualización Académica 2026."
-  ];
+  const handleInscribir = (id) => {
+    setComisiones((prev) =>
+      prev.map((c) =>
+        c.id === id && c.inscriptos < c.cupo
+          ? { ...c, inscriptos: c.inscriptos + 1 }
+          : c
+      )
+    );
+  };
 
-  const leyendaCopyright = "Todos los derechos reservados. Mantenimiento del Sistema Institucional.";
-  const anioVigente = new Date().getFullYear();
+  // Encadenamiento de .filter() para aplicar ambos criterios a la vez
+  const comisionesFiltradas = comisiones
+    .filter((c) => (turnoActivo === "todos" ? true : c.turno === turnoActivo))
+    .filter((c) => c.nombre.toLowerCase().includes(busqueda.toLowerCase()));
+
+  const totalComisiones = comisiones.length;
+  const totalDisponibles = comisiones.filter((c) => c.inscriptos < c.cupo).length;
 
   return (
-    <>
-      <Navbar
-        titulo={nombreColegio}
-        links={seccionesNav}
+    <main style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
+      <Encabezado
+        titulo="Cartelera de Comisiones"
+        totalComisiones={totalComisiones}
+        totalDisponibles={totalDisponibles}
       />
-      <Main
-        titulo={tituloPrincipal}
-        descripcion={descripcionGeneral}
-        items={serviciosDestacados}
+      <Buscador
+        busqueda={busqueda}
+        onCambiarBusqueda={setBusqueda}
       />
-      <Footer
-        texto={leyendaCopyright}
-        anio={anioVigente}
+      <Filtros
+        turnoActivo={turnoActivo}
+        onCambiarTurno={setTurnoActivo}
       />
-    </>
+      <ListaComisiones
+        comisiones={comisionesFiltradas}
+        onInscribir={handleInscribir}
+      />
+    </main>
   );
 }
 

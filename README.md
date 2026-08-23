@@ -14,3 +14,6 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Justificación de SinResultados (Punto 4.7)
+Se optó por resolver el renderizado condicional mediante un early return dentro del componente ListaComisiones. Esto permite mantener App.jsx enfocado únicamente en la gestión del estado global y la lógica de filtrado, delegando la responsabilidad de mostrar el mensaje alternativo al componente encargante de iterar la lista.
